@@ -1,0 +1,5 @@
+geckodriver.log
+.ipynb_checkpoints/
+.idea/
+name_lists/scraper_temp/
+*.pyc
