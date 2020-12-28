@@ -1,12 +1,12 @@
 from __future__ import annotations
-
 from enum import Enum
+from typing import List, Dict
 
 
-class Gender(Enum):
-    unisex = 0
-    boy = 1
-    girl = 2
+class Gender(str, Enum):
+    unisex = "unisex"
+    boy = "boy"
+    girl = "girl"
 
     def __str__(self):
         return self.name
@@ -25,210 +25,212 @@ class Gender(Enum):
             raise NotImplementedError
 
 
-class Region(Enum):
-    Afghanistan = 1
-    Albania = 2
-    Algeria = 3
-    Andorra = 4
-    Angola = 5
-    Antigua_And_Barbuda = 6
-    Argentina = 7
-    Armenia = 8
-    Aruba = 9
-    Australia = 10
-    Austria = 11
-    Azerbaijan = 12
-    Bahrain = 13
-    Bangladesh = 14
-    Barbados = 15
-    Belarus = 16
-    Belgium = 17
-    Bengali = 18
-    Benin = 19
-    Bermuda = 20
-    Bhutan = 21
-    Bolivia = 22
-    Bosnia_And_Herzegovina = 23
-    Botswana = 24
-    Brazil = 25
-    Brunei_Darussalam = 26
-    Bulgaria = 27
-    Burkina_Faso = 28
-    Burundi = 29
-    Cambodia = 30
-    Cameroon = 31
-    Canada = 32
-    Cape_Verde = 33
-    Central_African_Republic = 34
-    Chad = 35
-    Chile = 36
-    China = 37
-    Colombia = 38
-    Congo = 39
-    Costa_Rica = 40
-    Croatia = 41
-    Cuba = 42
-    Cyprus = 43
-    Czech_Republic = 44
-    Democratic_Republic_Of_Congo = 45
-    Denmark = 46
-    Djibouti = 47
-    Dominican_Republic = 48
-    Ecuador = 49
-    Egypt = 50
-    El_Salvador = 51
-    Equatorial_Guinea = 52
-    Eritrea = 53
-    Estonia = 54
-    Ethiopia = 55
-    Finland = 56
-    France = 57
-    Gambia = 58
-    Georgia = 59
-    Germany = 60
-    Ghana = 61
-    Gibraltar = 62
-    Greece = 63
-    Greenland = 64
-    Guatemala = 65
-    Guinea = 66
-    Guinea_Bissau = 67
-    Guyana = 68
-    Haiti = 69
-    Honduras = 70
-    Hong_Kong = 71
-    Hungary = 72
-    Iceland = 73
-    India = 74
-    Indonesia = 75
-    Iran = 76
-    Iraq = 77
-    Ireland = 78
-    Isle_Of_Man = 79
-    Israel = 80
-    Italy = 81
-    Ivory_Coast = 82
-    Jamaica = 83
-    Japan = 84
-    Jersey = 85
-    Jordan = 86
-    Kazakhstan = 87
-    Kenya = 88
-    Kiribati = 89
-    Kosovo = 90
-    Kuwait = 91
-    Kyrgyzstan = 92
-    Laos = 93
-    Latvia = 94
-    Lebanon = 95
-    Lesotho = 96
-    Liberia = 97
-    Libya = 98
-    Libyan_Arab_Jamahiriya = 99
-    Liechtenstein = 100
-    Lithuania = 101
-    Luxembourg = 102
-    Madagascar = 103
-    Malawi = 104
-    Malayalam = 105
-    Malaysia = 106
-    Maldives = 107
-    Mali = 108
-    Malta = 109
-    Marathi = 110
-    Mauritania = 111
-    Mauritius = 112
-    Mexico = 113
-    Micronesia = 114
-    Moldova = 115
-    Monaco = 116
-    Mongolia = 117
-    Montenegro = 118
-    Morocco = 119
-    Mozambique = 120
-    Muslim = 121
-    Myanmar = 122
-    Namibia = 123
-    Nauru = 124
-    Nepal = 125
-    Netherlands = 126
-    New_Caledonia = 127
-    New_Zealand = 128
-    Nicaragua = 129
-    Nigeria = 130
-    North_Korea = 131
-    Norway = 132
-    Oman = 133
-    Pakistan = 134
-    Palestine = 135
-    Panama = 136
-    Paraguay = 137
-    Peru = 138
-    Philippines = 139
-    Poland = 140
-    Portugal = 141
-    Puerto_Rico = 142
-    Punjabi = 143
-    Qatar = 144
-    Republic_Of_Macedonia = 145
-    Romania = 146
-    Russia = 147
-    Rwanda = 148
-    Saint_Kitts_And_Nevis = 149
-    Saint_Lucia = 150
-    Samoa = 151
-    Sanskrit = 152
-    Sao_Tome_And_Principe = 153
-    Saudi_Arabia = 154
-    Senegal = 155
-    Serbia = 156
-    Seychelles = 157
-    Sierra_Leone = 158
-    Singapore = 159
-    Slovakia = 160
-    Slovenia = 161
-    Somalia = 162
-    South_Africa = 163
-    South_Korea = 164
-    South_Sudan = 165
-    Spain = 166
-    Sri_Lanka = 167
-    Sudan = 168
-    Suriname = 169
-    Swaziland = 170
-    Sweden = 171
-    Switzerland = 172
-    Syria = 173
-    Taiwan = 174
-    Tajikistan = 175
-    Tamil = 176
-    Tanzania = 177
-    Telugu = 178
-    Thailand = 179
-    The_Netherlands = 180
-    Timor_Leste = 181
-    Togo = 182
-    Tonga = 183
-    Trinidad_And_Tobago = 184
-    Tunisia = 185
-    Turkey = 186
-    Turkmenistan = 187
-    Uganda = 188
-    Ukraine = 189
-    United_Arab_Emirates = 190
-    United_Kingdom = 191
-    United_States = 192
-    Unknown = 193
-    Uruguay = 194
-    US_Virgin_Islands = 195
-    Uzbekistan = 196
-    Vanuatu = 197
-    Venezuela = 198
-    Vietnam = 199
-    Yemen = 200
-    Zambia = 201
-    Zimbabwe = 202
-    English = 203
+class Region(str, Enum):
+    Afghanistan = 'Afghanistan'
+    Africa = 'Africa'
+    Albania = 'Albania'
+    Algeria = 'Algeria'
+    Andorra = 'Andorra'
+    Angola = 'Angola'
+    Antigua_And_Barbuda = 'Antigua and Barbuda'
+    Argentina = 'Argentina'
+    Armenia = 'Armenia'
+    Aruba = 'Aruba'
+    Australia = 'Australia'
+    Austria = 'Austria'
+    Azerbaijan = 'Azerbaijan'
+    Bahrain = 'Bahrain'
+    Bangladesh = 'Bangladesh'
+    Barbados = 'Barbados'
+    Belarus = 'Belarus'
+    Belgium = 'Belgium'
+    Bengali = 'Bengali'
+    Benin = 'Benin'
+    Bermuda = 'Bermuda'
+    Bhutan = 'Bhutan'
+    Bolivia = 'Bolivia'
+    Bosnia_And_Herzegovina = 'Bosnia And Herzegovina'
+    Botswana = 'Botswana'
+    Brazil = 'Brazil'
+    Brunei_Darussalam = 'Brunei Darussalam'
+    Bulgaria = 'Bulgaria'
+    Burkina_Faso = 'Burkina Faso'
+    Burundi = 'Burundi'
+    Cambodia = 'Cambodia'
+    Cameroon = 'Cameroon'
+    Canada = 'Canada'
+    Cape_Verde = 'Cape_Verde'
+    Central_African_Republic = 'Central African Republic'
+    Chad = 'Chad'
+    Chile = 'Chile'
+    China = 'China'
+    Colombia = 'Colombia'
+    Congo = 'Congo'
+    Costa_Rica = 'Costa_Rica'
+    Croatia = 'Croatia'
+    Cuba = 'Cuba'
+    Cyprus = 'Cyprus'
+    Czech_Republic = 'Czech_Republic'
+    Democratic_Republic_Of_Congo = 'Democratic Republic Of Congo'
+    Denmark = 'Denmark'
+    Djibouti = 'Djibouti'
+    Dominican_Republic = 'Dominican Republic'
+    Ecuador = 'Ecuador'
+    Egypt = 'Egypt'
+    El_Salvador = 'El Salvador'
+    Equatorial_Guinea = 'Equatorial Guinea'
+    Eritrea = 'Eritrea'
+    Estonia = 'Estonia'
+    Ethiopia = 'Ethiopia'
+    Finland = 'Finland'
+    France = 'France'
+    Gambia = 'Gambia'
+    Georgia = 'Georgia'
+    Germany = 'Germany'
+    Ghana = 'Ghana'
+    Gibraltar = 'Gibraltar'
+    Greece = 'Greece'
+    Greenland = 'Greenland'
+    Guatemala = 'Guatemala'
+    Guinea = 'Guinea'
+    Guinea_Bissau = 'Guinea Bissau'
+    Guyana = 'Guyana'
+    Haiti = 'Haiti'
+    Hebrew = 'Hebrew'
+    Honduras = 'Honduras'
+    Hong_Kong = 'Hong Kong'
+    Hungary = 'Hungary'
+    Iceland = 'Iceland'
+    India = 'India'
+    Indonesia = 'Indonesia'
+    Iran = 'Iran'
+    Iraq = 'Iraq'
+    Ireland = 'Ireland'
+    Isle_Of_Man = 'Isle of Man'
+    Israel = 'Israel'
+    Italy = 'Italy'
+    Ivory_Coast = 'Ivory Coast'
+    Jamaica = 'Jamaica'
+    Japan = 'Japan'
+    Jersey = 'Jersey'
+    Jordan = 'Jordan'
+    Kazakhstan = 'Kazakhstan'
+    Kenya = 'Kenya'
+    Kiribati = 'Kiribati'
+    Kosovo = 'Kosovo'
+    Kuwait = 'Kuwait'
+    Kyrgyzstan = 'Kyrgyzstan'
+    Laos = 'Laos'
+    Latvia = 'Latvia'
+    Lebanon = 'Lebanon'
+    Lesotho = 'Lesotho'
+    Liberia = 'Liberia'
+    Libya = 'Libya'
+    Libyan_Arab_Jamahiriya = 'Libyan Arab Jamahiriya'
+    Liechtenstein = 'Liechtenstein'
+    Lithuania = 'Lithuania'
+    Luxembourg = 'Luxembourg'
+    Madagascar = 'Madagascar'
+    Malawi = 'Malawi'
+    Malayalam = 'Malayalam'
+    Malaysia = 'Malaysia'
+    Maldives = 'Maldives'
+    Mali = 'Mali'
+    Malta = 'Malta'
+    Marathi = 'Marathi'
+    Mauritania = 'Mauritania'
+    Mauritius = 'Mauritius'
+    Mexico = 'Mexico'
+    Micronesia = 'Micronesia'
+    Moldova = 'Moldova'
+    Monaco = 'Monaco'
+    Mongolia = 'Mongolia'
+    Montenegro = 'Montenegro'
+    Morocco = 'Morocco'
+    Mozambique = 'Mozambique'
+    Muslim = 'Muslim'
+    Myanmar = 'Myanmar'
+    Namibia = 'Namibia'
+    Nauru = 'Nauru'
+    Nepal = 'Nepal'
+    Netherlands = 'Netherlands'
+    New_Caledonia = 'New Caledonia'
+    New_Zealand = 'New Zealand'
+    Nicaragua = 'Nicaragua'
+    Nigeria = 'Nigeria'
+    North_Korea = 'North Korea'
+    Norway = 'Norway'
+    Oman = 'Oman'
+    Pakistan = 'Pakistan'
+    Palestine = 'Palestine'
+    Panama = 'Panama'
+    Paraguay = 'Paraguay'
+    Peru = 'Peru'
+    Philippines = 'Philippines'
+    Poland = 'Poland'
+    Portugal = 'Portugal'
+    Puerto_Rico = 'Puerto_Rico'
+    Punjabi = 'Punjabi'
+    Qatar = 'Qatar'
+    Republic_Of_Macedonia = 'Republic Of Macedonia'
+    Romania = 'Romania'
+    Russia = 'Russia'
+    Rwanda = 'Rwanda'
+    Saint_Kitts_And_Nevis = 'Saint Kitts and Nevis'
+    Saint_Lucia = 'Saint_Lucia'
+    Samoa = 'Samoa'
+    Sanskrit = 'Sanskrit'
+    Sao_Tome_And_Principe = 'São Tomé and Principe'
+    Saudi_Arabia = 'Saudi Arabia'
+    Senegal = 'Senegal'
+    Serbia = 'Serbia'
+    Seychelles = 'Seychelles'
+    Sierra_Leone = 'Sierra Leone'
+    Singapore = 'Singapore'
+    Slovakia = 'Slovakia'
+    Slovenia = 'Slovenia'
+    Somalia = 'Somalia'
+    South_Africa = 'South Africa'
+    South_Korea = 'South Korea'
+    South_Sudan = 'South Sudan'
+    Spain = 'Spain'
+    Sri_Lanka = 'Sri Lanka'
+    Sudan = 'Sudan'
+    Suriname = 'Suriname'
+    Swaziland = 'Swaziland'
+    Sweden = 'Sweden'
+    Switzerland = 'Switzerland'
+    Syria = 'Syria'
+    Taiwan = 'Taiwan'
+    Tajikistan = 'Tajikistan'
+    Tamil = 'Tamil'
+    Tanzania = 'Tanzania'
+    Telugu = 'Telugu'
+    Thailand = 'Thailand'
+    The_Netherlands = 'The Netherlands'
+    Timor_Leste = 'Timor Leste'
+    Togo = 'Togo'
+    Tonga = 'Tonga'
+    Trinidad_And_Tobago = 'Trinidad And Tobago'
+    Tunisia = 'Tunisia'
+    Turkey = 'Turkey'
+    Turkmenistan = 'Turkmenistan'
+    Uganda = 'Uganda'
+    Ukraine = 'Ukraine'
+    United_Arab_Emirates = 'United Arab Emirates'
+    United_Kingdom = 'United Kingdom'
+    United_States = 'United States'
+    Unknown = 'Unknown'
+    Uruguay = 'Uruguay'
+    US_Virgin_Islands = 'US Virgin Islands'
+    Uzbekistan = 'Uzbekistan'
+    Vanuatu = 'Vanuatu'
+    Venezuela = 'Venezuela'
+    Vietnam = 'Vietnam'
+    Yemen = 'Yemen'
+    Zambia = 'Zambia'
+    Zimbabwe = 'Zimbabwe'
+    English = 'English'
 
     def __str__(self):
         return self.name
@@ -236,7 +238,7 @@ class Region(Enum):
     @staticmethod
     def from_str(label: str):
         label = label.lower()
-        if label == 'english':
+        if label == 'english' or label == 'england':
             return Region.English
         if label == 'tamil':
             return Region.Tamil
@@ -256,6 +258,8 @@ class Region(Enum):
             return Region.Punjabi
         if label == 'afghanistan':
             return Region.Afghanistan
+        if label == 'africa':
+            return Region.Africa
         if label == 'albania':
             return Region.Albania
         if label == 'algeria':
@@ -392,6 +396,8 @@ class Region(Enum):
             return Region.Guyana
         if label == 'haiti':
             return Region.Haiti
+        if label == 'hebrew':
+            return Region.Hebrew
         if label == 'honduras':
             return Region.Honduras
         if label == 'hong kong':
@@ -400,7 +406,7 @@ class Region(Enum):
             return Region.Hungary
         if label == 'iceland':
             return Region.Iceland
-        if label == 'india':
+        if label == 'india' or label == 'indian':
             return Region.India
         if label == 'indonesia':
             return Region.Indonesia
@@ -558,7 +564,7 @@ class Region(Enum):
             return Region.Samoa
         if label == 'sanskrit':
             return Region.Sanskrit
-        if label == 'sao tome and principe' or 'são tomé and príncipe':
+        if label == 'sao tome and principe' or label == 'são tomé and príncipe':
             return Region.Sao_Tome_And_Principe
         if label == 'saudi arabia':
             return Region.Saudi_Arabia
@@ -660,84 +666,97 @@ class Region(Enum):
             return Region.Zimbabwe
         else:
             print(f"cannot parse language or region from \"{label}\"")
-            return Region.United_States
+            return Region.Unknown
+
+
+class NameMeaning(object):
+    def __init__(self, meaning: str, origins: List[Region]):
+        self.meaning = meaning
+        self.origins = origins
 
 
 class NameDefinition(object):
-    def __init__(self, name: str, gender: Gender = None, meaning: str = None, origin: Region or str= None, known_persons: str = None):
+    def __init__(self, name: str, gender: Gender = None, meanings: List[NameMeaning] = None, meaning: str = None,
+                 origin: Region or str = None,
+                 known_persons: str = None):
         self.name = name
         self.gender = gender
-        self.meaning = []
-        self.origin = []
+        self.meanings: List[NameMeaning] = []
         self.known_persons = []
-        if meaning is not None:
-            self.meaning.append(meaning.lower().strip())
-        if origin is not None:
-            if type(origin) is str:
-                self.add_origins(origin)
-            else:
-                self.origin.append(origin)
         if known_persons is not None:
             self.known_persons.append(known_persons)
+        self.add_meaning(meaning, origin)
+        self.add_meanings(meanings)
+
+    def add_meaning(self, meaning: str, origin: Region or str = None):
+        if meaning is None:
+            return
+        if type(meaning) is str and meaning is not None:
+            meaning = meaning.lower().strip()
+
+        # we already know about this meaning, so just add the new origin
+        for idx, cur_meaning in enumerate(self.meanings):
+            if cur_meaning.meaning == meaning:
+                if origin not in cur_meaning.origins:
+                    cur_meaning.origins.append(origin)
+                    self.meanings[idx] = cur_meaning
+                return
+
+        # new meaning, so let's save it
+        clean_region: Region = Region.Unknown
+        if type(origin) is str:
+            clean_region = Region.from_str(origin)
+        else:
+            clean_region = origin
+        self.meanings.append(NameMeaning(meaning=meaning, origins=[clean_region]))
+
+    def add_meanings(self, meanings: List[NameMeaning]):
+        if meanings is not None:
+            for m in meanings:
+                for o in m.origins:
+                    self.add_meaning(m.meaning, o)
 
     def merge_name(self, other_name: NameDefinition):
         if self.gender is None:
             self.gender = other_name.gender
         elif other_name.gender is not None and other_name.gender != self.gender:
             self.gender = Gender.unisex
-        self.meaning = self.meaning + other_name.meaning
-        self.origin = self.origin + other_name.origin
+
         self.known_persons = self.known_persons + other_name.known_persons
 
-    def add_origins(self, origins:str):
-        if ',' in origins:
-            for origin_str in origins.split(','):
-                self.origin.append(Region.from_str(origin_str))
-        else:
-            self.origin.append(Region.from_str(origins))
-
-    def append_attrs(self, gender: Gender = None, meaning: str = None, origin: Region = None, known_persons: str = None):
+    def append_attrs(self, gender: Gender = None, meanings: List[NameMeaning] = None, meaning: str = None, origin: Region = None,
+                     known_persons: str = None):
+        self.add_meaning(meaning, origin)
+        self.add_meanings(meanings)
         if gender is not None and gender != self.gender:
             self.gender = Gender.unisex
-        if meaning is not None:
-            meaning = meaning.lower().strip()
-            if meaning not in self.meaning:
-                self.meaning.append(meaning)
-        if origin is not None and origin not in self.origin:
-            self.origin.append(origin)
         if known_persons is not None and known_persons not in self.known_persons:
             self.known_persons.append(known_persons)
 
-    def get_meaning(self):
-        return str(', '.join(self.meaning)).strip()
+    def get_all_origins(self) -> List[Region]:
+        res = set()
+        for m in self.meanings:
+            res.update(set(m.origins))
+        list_result = list(res)
+        list_result.sort()
+        if list_result is None:
+            return []
+        return list_result
 
-    #     def __iter__(self):
-    #         yield self.name
-    #         yield str(','.join(self.gender))
-    #         yield str(','.join(self.language))
-    #         yield str(','.join(self.meaning))
+    def get_all_meanings(self) -> List[str]:
+        res = []
+        for m in self.meanings:
+            res.append(m.meaning)
+        return res
 
     def to_dict(self):
-        meaning_str = ''
-        if self.meaning is not None:
-            meaning_str = str(','.join(self.meaning))
         return {
             "name": self.name,
-            "gender": str(self.gender),
-            "origin":  str(','.join([str(lang) for lang in self.origin])),
-            "meaning": meaning_str,
-            "known_persons": str(','.join(self.known_persons)),
+            "gender": self.gender,
+            "meanings": [m.__dict__ for m in self.meanings],
+            "known_persons": str(','.join(self.known_persons))
         }
 
     @classmethod
     def columns(cls):
         return ['Name', 'Gender', 'Language', 'Meaning']
-
-
-if __name__ == "__main__":
-    test_name1 = NameDefinition("Sue", Gender.girl, "Graceful lily", Region.English)
-    print(f"{test_name1.to_dict()}")
-
-    print(f"{','.join(['a', 'b'])}")
-    test_name1.append_attrs(gender=Gender.boy)
-    print(f"{test_name1.to_dict()}")

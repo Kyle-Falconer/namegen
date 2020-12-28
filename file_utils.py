@@ -6,7 +6,6 @@ from pandas import DataFrame
 from Name import NameDefinition
 
 
-
 def save_names_raw(filename, names_dict, overwrite=False):
     df = pd.DataFrame.from_dict(names_dict)
 
@@ -24,9 +23,14 @@ def save_names_raw(filename, names_dict, overwrite=False):
         df.to_csv(csvfile, header=need_header)
 
 
-def save_names(output_filename: str, names_dataframes: DataFrame):
+def save_names_csv(output_filename: str, names_dataframes: DataFrame):
     print(f"saving {len(names_dataframes)} names to {output_filename}")
     names_dataframes.to_csv(output_filename, header=True)
+
+
+def save_names_json(output_filename: str, names_dataframes: DataFrame):
+    print(f"saving {len(names_dataframes)} names to {output_filename}")
+    names_dataframes.to_json(output_filename, orient="records")
 
 
 def name_list_to_dataframe(names_list: List[NameDefinition]) -> DataFrame:

@@ -1,10 +1,10 @@
-import os, csv
+import os, csv, json
 
 from typing import List
 
 from Name import NameDefinition, Gender, Region
 
-from file_utils import save_names, name_list_to_dataframe
+from file_utils import save_names_csv, save_names_json, name_list_to_dataframe
 
 # input lists
 pantheon_filename = os.path.join("name_lists", "pantheon.tsv")
@@ -14,7 +14,8 @@ star_trek_filename = os.path.join("name_lists", "star_trek.csv")
 meaning_of_names_filename = os.path.join("name_lists", "meaning_of_names_scraped_names.csv")
 
 # output list
-merged_output_filename = os.path.join("name_lists", "names_merged.csv")
+merged_output_csv_filename = os.path.join("name_lists", "names_merged.csv")
+merged_output_json_filename = os.path.join("name_lists", "names_merged.json")
 
 
 def intake_indian_names() -> List[NameDefinition]:
@@ -106,18 +107,18 @@ def intake_star_trek() -> List[NameDefinition]:
                 rank = row['Rank'].split(',')[0].strip()
                 if len(rank) is not 0:
                     rank = f"{rank} "
-            first_name=f"{row['First Name']}"
-            character_name=f"{rank}{row['Character']} from Star Trek"
+            first_name = f"{row['First Name']}"
+            character_name = f"{rank}{row['Character']} from Star Trek"
             if first_name in names and names[first_name] is not None:
                 existing_name = names[first_name]
                 existing_name.append_attrs(gender=Gender.from_str(row['Gender']),
-                                           known_persons = character_name)
+                                           known_persons=character_name)
                 names[first_name] = existing_name
                 number_merged = number_merged + 1
             else:
-                names[first_name] =  NameDefinition(name=first_name,
-                                              gender=Gender.from_str(row['Gender']),
-                                              known_persons=character_name)
+                names[first_name] = NameDefinition(name=first_name,
+                                                   gender=Gender.from_str(row['Gender']),
+                                                   known_persons=character_name)
                 number_added = number_added + 1
 
     print(f"added {number_added} and merged/updated {number_merged} name definitions from Star Trek")
@@ -179,7 +180,8 @@ def main():
     all_names = sort_merged(all_names)
 
     names_df = name_list_to_dataframe(all_names)
-    save_names(merged_output_filename, names_df)
+    # save_names_csv(merged_output_csv_filename, names_df)
+    save_names_json(merged_output_json_filename, names_df)
 
 
 if __name__ == "__main__":
