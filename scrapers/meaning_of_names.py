@@ -1,9 +1,10 @@
 # scraper for http://www.meaning-of-names.com/
 
 
-import csv, os
-import pandas as pd
+import csv
+import os
 
+import pandas as pd
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException, \
     NoSuchWindowException

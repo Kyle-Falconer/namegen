@@ -3,6 +3,17 @@ from enum import Enum
 from typing import List, Dict
 
 
+class NameSource(str, Enum):
+    ssa = "ssa"  # Social Security Administration
+    pantheon = "pantheon"
+    tamilcube = "tamilcube"
+    meaning_of_names = "meaning_of_names"
+    star_trek = "star_trek"
+
+    def __str__(self):
+        return self.name
+
+
 class Gender(str, Enum):
     unisex = "unisex"
     boy = "boy"
@@ -28,6 +39,7 @@ class Gender(str, Enum):
 class Region(str, Enum):
     Afghanistan = 'Afghanistan'
     Africa = 'Africa'
+    African_American = 'African-American'
     Albania = 'Albania'
     Algeria = 'Algeria'
     Andorra = 'Andorra'
@@ -121,6 +133,7 @@ class Region(str, Enum):
     Kuwait = 'Kuwait'
     Kyrgyzstan = 'Kyrgyzstan'
     Laos = 'Laos'
+    Latin_America = 'Latin-America'
     Latvia = 'Latvia'
     Lebanon = 'Lebanon'
     Lesotho = 'Lesotho'
@@ -151,6 +164,7 @@ class Region(str, Enum):
     Muslim = 'Muslim'
     Myanmar = 'Myanmar'
     Namibia = 'Namibia'
+    Native_American = 'Native American'
     Nauru = 'Nauru'
     Nepal = 'Nepal'
     Netherlands = 'Netherlands'
@@ -260,6 +274,8 @@ class Region(str, Enum):
             return Region.Afghanistan
         if label == 'africa':
             return Region.Africa
+        if label == 'african-american':
+            return Region.African_American
         if label == 'albania':
             return Region.Albania
         if label == 'algeria':
@@ -370,13 +386,13 @@ class Region(str, Enum):
             return Region.Ethiopia
         if label == 'finland':
             return Region.Finland
-        if label == 'france':
+        if label == 'france' or label == 'french':
             return Region.France
         if label == 'gambia':
             return Region.Gambia
         if label == 'georgia':
             return Region.Georgia
-        if label == 'germany':
+        if label == 'germany' or label == 'german':
             return Region.Germany
         if label == 'ghana':
             return Region.Ghana
@@ -414,19 +430,19 @@ class Region(str, Enum):
             return Region.Iran
         if label == 'iraq':
             return Region.Iraq
-        if label == 'ireland':
+        if label == 'ireland' or label == 'irish' or label == 'gaelic' or label == 'celtic':
             return Region.Ireland
         if label == 'isle of man':
             return Region.Isle_Of_Man
         if label == 'israel':
             return Region.Israel
-        if label == 'italy':
+        if label == 'italy' or label == 'italian':
             return Region.Italy
         if label == 'ivory coast':
             return Region.Ivory_Coast
         if label == 'jamaica':
             return Region.Jamaica
-        if label == 'japan':
+        if label == 'japan' or label == 'japanese':
             return Region.Japan
         if label == 'jersey':
             return Region.Jersey
@@ -446,6 +462,8 @@ class Region(str, Enum):
             return Region.Kyrgyzstan
         if label == 'laos':
             return Region.Laos
+        if label == 'latin-america':
+            return Region.Latin_America
         if label == 'latvia':
             return Region.Latvia
         if label == 'lebanon':
@@ -506,11 +524,13 @@ class Region(str, Enum):
             return Region.Myanmar
         if label == 'namibia':
             return Region.Namibia
+        if label == 'native american' or label == 'native-american':
+            return Region.Native_American
         if label == 'nauru':
             return Region.Nauru
         if label == 'nepal':
             return Region.Nepal
-        if label == 'netherlands':
+        if label == 'netherlands' or label == 'dutch':
             return Region.Netherlands
         if label == 'new caledonia':
             return Region.New_Caledonia
@@ -566,7 +586,7 @@ class Region(str, Enum):
             return Region.Sanskrit
         if label == 'sao tome and principe' or label == 'são tomé and príncipe':
             return Region.Sao_Tome_And_Principe
-        if label == 'saudi arabia':
+        if label == 'saudi arabia' or label == 'arabia':
             return Region.Saudi_Arabia
         if label == 'senegal':
             return Region.Senegal
@@ -586,11 +606,11 @@ class Region(str, Enum):
             return Region.Somalia
         if label == 'south africa':
             return Region.South_Africa
-        if label == 'south korea':
+        if label == 'south korea' or label == 'korean' or label == 'korea':
             return Region.South_Korea
         if label == 'south sudan':
             return Region.South_Sudan
-        if label == 'spain':
+        if label == 'spain' or label == 'spanish':
             return Region.Spain
         if label == 'sri lanka':
             return Region.Sri_Lanka
@@ -640,9 +660,9 @@ class Region(str, Enum):
             return Region.Ukraine
         if label == 'united arab emirates':
             return Region.United_Arab_Emirates
-        if label == 'united kingdom':
+        if label == 'united kingdom' or label == 'welsh' or label == 'scottish' or label == 'scotland':
             return Region.United_Kingdom
-        if label == 'united states':
+        if label == 'united states' or label == 'america':
             return Region.United_States
         if label == 'unknown':
             return Region.Unknown
@@ -677,8 +697,7 @@ class NameMeaning(object):
 
 class NameDefinition(object):
     def __init__(self, name: str, gender: Gender = None, meanings: List[NameMeaning] = None, meaning: str = None,
-                 origin: Region or str = None,
-                 known_persons: str = None):
+                 origin: Region or str = None, known_persons: str = None, source: NameSource = None):
         self.name = name
         self.gender = gender
         self.meanings: List[NameMeaning] = []
@@ -687,6 +706,8 @@ class NameDefinition(object):
             self.known_persons.append(known_persons)
         self.add_meaning(meaning, origin)
         self.add_meanings(meanings)
+        self.sources = set()
+        self.add_sources(source)
 
     def add_meaning(self, meaning: str, origin: Region or str = None):
         if meaning is None:
@@ -716,18 +737,28 @@ class NameDefinition(object):
                 for o in m.origins:
                     self.add_meaning(m.meaning, o)
 
+    def add_sources(self, sources):
+        if sources is not None:
+            if isinstance(sources, list) or isinstance(sources, set):
+                for s in sources:
+                    self.sources.add(s)
+            else:
+                self.sources.add(sources)
+
     def merge_name(self, other_name: NameDefinition):
         if self.gender is None:
             self.gender = other_name.gender
         elif other_name.gender is not None and other_name.gender != self.gender:
             self.gender = Gender.unisex
-
+        self.add_meanings(other_name.meanings)
+        self.add_sources(other_name.sources)
         self.known_persons = self.known_persons + other_name.known_persons
 
-    def append_attrs(self, gender: Gender = None, meanings: List[NameMeaning] = None, meaning: str = None, origin: Region = None,
-                     known_persons: str = None):
+    def append_attrs(self, gender: Gender = None, meanings: List[NameMeaning] = None, meaning: str = None,
+                     origin: Region = None, known_persons: str = None, source: NameSource = None):
         self.add_meaning(meaning, origin)
         self.add_meanings(meanings)
+        self.add_sources(source)
         if gender is not None and gender != self.gender:
             self.gender = Gender.unisex
         if known_persons is not None and known_persons not in self.known_persons:
@@ -754,9 +785,10 @@ class NameDefinition(object):
             "name": self.name,
             "gender": self.gender,
             "meanings": [m.__dict__ for m in self.meanings],
-            "known_persons": str(','.join(self.known_persons))
+            "known_persons": str(','.join(self.known_persons)),
+            "source": list(self.sources)
         }
 
     @classmethod
     def columns(cls):
-        return ['Name', 'Gender', 'Language', 'Meaning']
+        return ['Name', 'Gender', 'Meaning', 'Known Persons', 'Source']

@@ -1,9 +1,10 @@
+import json
 from typing import Dict, List
 import os
 import pandas as pd
 from pandas import DataFrame
 
-from Name import NameDefinition
+from Name import NameDefinition, Gender, NameMeaning
 
 
 def save_names_raw(filename, names_dict, overwrite=False):
@@ -30,7 +31,34 @@ def save_names_csv(output_filename: str, names_dataframes: DataFrame):
 
 def save_names_json(output_filename: str, names_dataframes: DataFrame):
     print(f"saving {len(names_dataframes)} names to {output_filename}")
-    names_dataframes.to_json(output_filename, orient="records")
+    names_dataframes.to_json(output_filename, orient="records", indent=2)
+
+
+def read_names_json(filename: str) -> Dict[str, NameDefinition]:
+    names = {}
+    with open(filename) as jsonfile:
+        data = json.load(jsonfile)
+        number_merged = 0
+        for record in data:
+            meanings_list = []
+            for m in record['meanings']:
+                meanings_list.append(NameMeaning(meaning=m['meaning'], origins=m['origins']))
+            if record['name'] in names and names[record['name']] is not None:
+                existing_name = names[record['name']]
+                existing_name.append_attrs(gender=Gender.from_str(record['gender']),
+                                           meanings=meanings_list,
+                                           known_persons=record['known_persons'],
+                                           source=record['source'])
+                names[record['name']] = existing_name
+                number_merged = number_merged + 1
+            else:
+                names[record['name']] = NameDefinition(name=record['name'],
+                                                       gender=Gender.from_str(record['gender']),
+                                                       meanings=meanings_list,
+                                                       known_persons=record['known_persons'],
+                                                       source=record['source'])
+        print(f"merged {number_merged} names")
+    return names
 
 
 def name_list_to_dataframe(names_list: List[NameDefinition]) -> DataFrame:

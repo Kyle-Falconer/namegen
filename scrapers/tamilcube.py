@@ -3,8 +3,6 @@ import pandas as pd
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-import string
 
 output_filename = os.path.join("name_lists", "tamilcube_scraped_names.csv")
 
@@ -68,7 +66,8 @@ def scrape():
                             name_index = name_index + 1
                         except NoSuchElementException as nse:
                             print(nse)
-                            print(f"No more names found on this page for {language} and letter {letter}, found {name_index} names")
+                            print(
+                                f"No more names found on this page for {language} and letter {letter}, found {name_index} names")
                             names_found = False
 
                     try:
@@ -88,13 +87,12 @@ def scrape():
                 print(f"reached end of the list for this page, saw {number_of_pages} pages and {number_of_names} names")
 
     driver.close()
+    return name_output
 
 
 def main():
-    print(f"got {len(name_output)} names from tamilcube.com")
-
-    save_names(name_output)
-    print("It's recommended to check the file for duplicates using Excel or similar.")
+    print("beginning scrape of tamilcube.com")
+    scrape()
 
 
 if __name__ == "__main__":

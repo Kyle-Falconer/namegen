@@ -3,32 +3,51 @@ import os
 from string import ascii_letters
 from typing import Dict
 
-from Name import NameDefinition, Gender, Region, NameMeaning
-from file_utils import name_dict_to_dataframe, save_names_json
+from Name import NameDefinition, Gender, Region, NameMeaning, NameSource
+from file_utils import read_names_json, name_dict_to_dataframe, save_names_json
+from name_constants import bad_name_endings, hard_to_pronounce, excluded_startings, western_origins, indian_origins, \
+    religious_indicators
+from name_utils import name_stats
 
 names_json_filename = os.path.join("name_lists", "names_merged.json")
 output_filename = "names_output.json"
 
-religious_indicators = ["lord", "god", "goddess", "zeus", "virgin"]
-bad_name_endings = ('a', 'i')
 
-english_origins = [Region.United_States, Region.United_Kingdom, Region.English]
-indian_origins = [Region.Tamil, Region.Malayalam, Region.Sanskrit, Region.Telugu, Region.Muslim, Region.Bengali,
-                  Region.Marathi, Region.Punjabi]
+def exclude_names_starting_in(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if not name_def.name.lower().startswith(excluded_startings):
+            included_names[n] = name_def
+
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names starting in {excluded_startings}")
+    return included_names
 
 
 def exclude_names_ending_in(names: Dict[str, NameDefinition]):
     included_names = {}
-
     for n in names:
         name_def = names[n]
-        likely_indian = any(o in indian_origins for o in name_def.get_all_origins())
-        if not likely_indian:
-            included_names[n] = name_def
-        elif not name_def.name.endswith(bad_name_endings):
+        if not name_def.name.lower().startswith(bad_name_endings):
             included_names[n] = name_def
 
-    print(f"Removed {len(names.keys()) - len(included_names.keys())} Indian names ending in {bad_name_endings}")
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names ending in {bad_name_endings}")
+    return included_names
+
+
+def exclude_hard_to_pronounce_names(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        name_is_ok = True
+        for phoneme in hard_to_pronounce:
+            if phoneme in name_def.name.lower():
+                name_is_ok = False
+        if name_is_ok:
+            included_names[n] = name_def
+
+    print(
+        f"Removed {len(names.keys()) - len(included_names.keys())} hard to pronounce names containing {hard_to_pronounce}")
     return included_names
 
 
@@ -36,7 +55,7 @@ def exclude_hyphenated_names(names: Dict[str, NameDefinition]):
     included_names = {}
     for n in names:
         name_def = names[n]
-        if not '-' in name_def.name:
+        if '-' not in name_def.name:
             included_names[n] = name_def
     print(f"Removed {len(names.keys()) - len(included_names.keys())} names because they contained a hyphen ('-')")
     return included_names
@@ -103,6 +122,16 @@ def exclude_meaningless_names(names: Dict[str, NameDefinition]) -> Dict[str, Nam
     return included_names
 
 
+def exclude_israeli_names(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if Region.Israel not in name_def.get_all_origins():
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} Israeli names")
+    return included_names
+
+
 def exclude_muslim_names(names: Dict[str, NameDefinition]):
     included_names = {}
     for n in names:
@@ -110,6 +139,52 @@ def exclude_muslim_names(names: Dict[str, NameDefinition]):
         if Region.Muslim not in name_def.get_all_origins():
             included_names[n] = name_def
     print(f"Removed {len(names.keys()) - len(included_names.keys())} Muslim names")
+    return included_names
+
+
+def union_regions(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        origins = name_def.get_all_origins()
+        likely_indian = any(o in indian_origins for o in origins)
+        likely_western = any(o in western_origins for o in origins)
+        if likely_indian or likely_western:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names which are neither Indian nor Western")
+    return included_names
+
+
+def intersect_regions(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        origins = name_def.get_all_origins()
+        likely_indian = any(o in indian_origins for o in origins)
+        likely_western = any(o in western_origins for o in origins)
+        if likely_indian and likely_western:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names which are neither Indian nor Western")
+    return included_names
+
+
+def intersect_sources(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if NameSource.ssa in name_def.sources and NameSource.tamilcube in name_def.sources:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names which are neither Indian nor Western")
+    return included_names
+
+
+def exclude_short_names(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if len(name_def.name) > 3:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names that were shorter than four letters")
     return included_names
 
 
@@ -129,57 +204,25 @@ def exclude_religious_meanings(names: Dict[str, NameDefinition]):
     return accepted_names
 
 
-def read_names_json(filename: str) -> Dict[str, NameDefinition]:
-    names = {}
-    with open(filename) as jsonfile:
-        data = json.load(jsonfile)
-        number_merged = 0
-        for record in data:
-            meanings_list = []
-            for m in record['meanings']:
-                meanings_list.append(NameMeaning(meaning=m['meaning'], origins=m['origins']))
-            if record['name'] in names and names[record['name']] is not None:
-                existing_name = names[record['name']]
-                existing_name.append_attrs(gender=Gender.from_str(record['gender']),
-                                           meanings=meanings_list,
-                                           known_persons=record['known_persons'])
-                names[record['name']] = existing_name
-                number_merged = number_merged + 1
-            else:
-                names[record['name']] = NameDefinition(name=record['name'],
-                                                       gender=Gender.from_str(record['gender']),
-                                                       meanings=meanings_list,
-                                                       known_persons=record['known_persons'])
-        print(f"merged {number_merged} names")
-    return names
-
-
 def apply_filters(names_dict: Dict[str, NameDefinition]):
     filtered_names = names_dict
     filtered_names = exclude_hyphenated_names(filtered_names)
     filtered_names = exclude_names_ending_in(filtered_names)
+    filtered_names = exclude_names_starting_in(filtered_names)
+    filtered_names = exclude_hard_to_pronounce_names(filtered_names)
     filtered_names = exclude_nonlatin_names(filtered_names)
     filtered_names = exclude_meta_names(filtered_names)
+    filtered_names = exclude_short_names(filtered_names)
     filtered_names = exclude_religious_meanings(filtered_names)
     filtered_names = exclude_boy_names(filtered_names)
+    filtered_names = exclude_israeli_names(filtered_names)
     filtered_names = exclude_muslim_names(filtered_names)
     filtered_names = exclude_meaningless_names(filtered_names)
+    # filtered_names = union_regions(filtered_names)
+    # filtered_names = intersect_regions(filtered_names)
+    # filtered_names = intersect_sources(filtered_names)
     print(f"filtered a total of {len(names_dict.keys()) - len(filtered_names.keys())} names")
     return filtered_names
-
-
-def name_stats(names_dict: Dict[str, NameDefinition]):
-    english_count = 0
-    indian_count = 0
-    for name in names_dict:
-        origins = names_dict[name].get_all_origins()
-        likely_indian = any(o in indian_origins for o in origins)
-        likely_english = any(o in english_origins for o in origins)
-        if likely_indian:
-            indian_count = indian_count + 1
-        if likely_english:
-            english_count = english_count + 1
-    print(f"Counted {indian_count} Indian names and {english_count} English names")
 
 
 def main():
@@ -193,4 +236,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

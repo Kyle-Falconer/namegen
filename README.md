@@ -14,3 +14,9 @@ The name_lists folder contains these sources
 * [pantheon.tsv](name_lists/pantheon.tsv) comes from the Harvard dataset: [A Manually Verified Dataset of Globally Famous Biographies](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/28201)
 * [star_trek.csv](name_lists/star_trek.csv) contains star trek character names, adapted from [Wikipedia](https://en.wikipedia.org/wiki/List_of_Star_Trek_characters)
 * [names_merged.csv](name_lists/names_merged.csv): the merged and deduplicated result of all the above name lists
+
+
+## Development
+This project is developed for Python 3.x and works well in the PyCharm IDE. It's recommended to use Anaconda or some other virtual environment for developing.
+
+Tests in the [./tests](./tests`) folder are written for the pytest framework.
