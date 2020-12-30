@@ -1,3 +1,7 @@
+# NameGen
+A script to compile and filter down baby names based on a series of rules. This script was originally written to find a 
+name for the future daughter of the original author. The filters and name sources are tuned to suit the author's 
+preferences. Some of these preferences include finding names that have no obviously religious or derogatory meaning.
 
 ## Name List Creation
 For the name lists:
@@ -16,6 +20,11 @@ The name_lists folder contains these sources
 * [stripper_names.txt](name_lists/stripper_names.txt): a list of stripper names
 * [people_we_know.txt](name_lists/people_we_know.txt): a list of people you know. Customize this list to suit, include alternate spellings.
 * [names_merged.json](name_lists/names_merged.json): the merged and deduplicated result of all the above name lists in JSON format
+
+## Filtering
+Filter customization can be done in one of two ways:
+* enabling or disabling rules that are applied during the filter step by commenting out or uncommenting lines in the `apply_filters` function of [`names_filter.py`](./names_filter.py)
+* tweaking the contents of [`name_constants.py`](./name_constants.py)
 
 ## Development
 This project is developed for Python 3.x and works well in the PyCharm IDE. It's recommended to use Anaconda or some other virtual environment for developing.
