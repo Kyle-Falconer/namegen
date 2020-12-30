@@ -10,6 +10,7 @@ class NameSource(str, Enum):
     meaning_of_names = "meaning-of-names.com"
     star_trek = "Star Trek"
     stripper = "strippername"
+    people_we_know = "people_we_know"
 
     def __str__(self):
         return self.name

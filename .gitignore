@@ -1,5 +1,8 @@
 geckodriver.log
+*.pyc
 .ipynb_checkpoints/
 .idea/
 name_lists/scraper_temp/
-*.pyc
+
+# for privacy reasons, don't commit changes to this file:
+name_lists/people_we_know.txt

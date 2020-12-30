@@ -1,9 +1,8 @@
-import json
 import os
 from string import ascii_letters
 from typing import Dict
 
-from Name import NameDefinition, Gender, Region, NameMeaning, NameSource
+from Name import NameDefinition, Gender, Region, NameSource
 from file_utils import read_names_json, name_dict_to_dataframe, save_names_json
 from name_constants import bad_name_endings, hard_to_pronounce, excluded_startings, western_origins, indian_origins, \
     religious_indicators
@@ -196,6 +195,16 @@ def exclude_stripper_names(names: Dict[str, NameDefinition]):
     return included_names
 
 
+def exclude_names_of_people_know(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if NameSource.people_we_know not in name_def.sources:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names of people we know")
+    return included_names
+
+
 def exclude_israeli_names(names: Dict[str, NameDefinition]):
     included_names = {}
     for n in names:
@@ -306,8 +315,9 @@ def apply_filters(names_dict: Dict[str, NameDefinition]):
     print(f"{len(filtered_names)} names remain after meaning-based exclusions")
 
     # region or origin exclusions
-    filtered_names = exclude_non_ssa_names(filtered_names)
+    # filtered_names = exclude_non_ssa_names(filtered_names)
     filtered_names = exclude_stripper_names(filtered_names)
+    filtered_names = exclude_names_of_people_know(filtered_names)
     filtered_names = exclude_israeli_names(filtered_names)
     filtered_names = exclude_muslim_names(filtered_names)
     # filtered_names = union_regions(filtered_names)

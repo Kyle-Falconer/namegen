@@ -15,6 +15,7 @@ indian_names_filename = os.path.join("name_lists", "tamilcube_scraped_names.csv"
 star_trek_filename = os.path.join("name_lists", "star_trek.csv")
 meaning_of_names_filename = os.path.join("name_lists", "meaning_of_names_scraped_names.csv")
 strippers_filename = os.path.join("name_lists", "stripper_names.txt")
+people_we_know_filename = os.path.join("name_lists", "people_we_know.txt")
 
 # output list
 merged_output_csv_filename = os.path.join("name_lists", "names_merged.csv")
@@ -191,6 +192,28 @@ def intake_strippers(names: Dict[str, NameDefinition] = None) -> Dict[str, NameD
     return names
 
 
+def intake_people_we_know(names: Dict[str, NameDefinition] = None) -> Dict[str, NameDefinition]:
+    print(f"reading names from {people_we_know_filename}")
+    number_merged = 0
+    number_added = 0
+    if names is None:
+        names = {}
+    with open(people_we_know_filename) as file:
+        content = file.readlines()
+        for line in content:
+            name = line.strip()
+            if name in names and names[name] is not None:
+                existing_name = names[name]
+                existing_name.append_attrs(source=NameSource.people_we_know)
+                names[name] = existing_name
+                number_merged = number_merged + 1
+            else:
+                names[name] = NameDefinition(name=name, source=NameSource.people_we_know)
+                number_added = number_added + 1
+    print(f"added {number_added} and merged/updated {number_merged} name definitions from the people we know name list")
+    return names
+
+
 def main():
     all_names = {}
     all_names = intake_mon_names(all_names)
@@ -199,6 +222,7 @@ def main():
     all_names = intake_ssa_names(all_names)
     all_names = intake_star_trek(all_names)
     all_names = intake_strippers(all_names)
+    all_names = intake_people_we_know(all_names)
 
     name_stats(all_names)
 
