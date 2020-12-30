@@ -16,6 +16,8 @@ star_trek_filename = os.path.join("name_lists", "star_trek.csv")
 meaning_of_names_filename = os.path.join("name_lists", "meaning_of_names_scraped_names.csv")
 strippers_filename = os.path.join("name_lists", "stripper_names.txt")
 people_we_know_filename = os.path.join("name_lists", "people_we_know.txt")
+us_states_filename = os.path.join("name_lists", "us_states.txt")
+countries_filename = os.path.join("name_lists", "country_names.txt")
 
 # output list
 merged_output_csv_filename = os.path.join("name_lists", "names_merged.csv")
@@ -214,6 +216,50 @@ def intake_people_we_know(names: Dict[str, NameDefinition] = None) -> Dict[str, 
     return names
 
 
+def intake_us_states(names: Dict[str, NameDefinition] = None) -> Dict[str, NameDefinition]:
+    print(f"reading names from {us_states_filename}")
+    number_merged = 0
+    number_added = 0
+    if names is None:
+        names = {}
+    with open(us_states_filename) as file:
+        content = file.readlines()
+        for line in content:
+            name = line.strip()
+            if name in names and names[name] is not None:
+                existing_name = names[name]
+                existing_name.append_attrs(source=NameSource.us_states)
+                names[name] = existing_name
+                number_merged = number_merged + 1
+            else:
+                names[name] = NameDefinition(name=name, source=NameSource.us_states)
+                number_added = number_added + 1
+    print(f"added {number_added} and merged/updated {number_merged} name definitions from the list of U.S. States")
+    return names
+
+
+def intake_countries(names: Dict[str, NameDefinition] = None) -> Dict[str, NameDefinition]:
+    print(f"reading names from {countries_filename}")
+    number_merged = 0
+    number_added = 0
+    if names is None:
+        names = {}
+    with open(countries_filename) as file:
+        content = file.readlines()
+        for line in content:
+            name = line.strip()
+            if name in names and names[name] is not None:
+                existing_name = names[name]
+                existing_name.append_attrs(source=NameSource.countries)
+                names[name] = existing_name
+                number_merged = number_merged + 1
+            else:
+                names[name] = NameDefinition(name=name, source=NameSource.countries)
+                number_added = number_added + 1
+    print(f"added {number_added} and merged/updated {number_merged} name definitions from the list of countries")
+    return names
+
+
 def main():
     all_names = {}
     all_names = intake_mon_names(all_names)
@@ -223,6 +269,8 @@ def main():
     all_names = intake_star_trek(all_names)
     all_names = intake_strippers(all_names)
     all_names = intake_people_we_know(all_names)
+    all_names = intake_us_states(all_names)
+    all_names = intake_countries(all_names)
 
     name_stats(all_names)
 

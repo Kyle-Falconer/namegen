@@ -1,11 +1,13 @@
 import os
+import re
 from string import ascii_letters
 from typing import Dict
 
 from Name import NameDefinition, Gender, Region, NameSource
 from file_utils import read_names_json, name_dict_to_dataframe, save_names_json
-from name_constants import bad_name_endings, hard_to_pronounce, excluded_startings, western_origins, indian_origins, \
-    religious_indicators
+from name_constants import excluded_name_endings, hard_to_pronounce, excluded_startings, western_origins, \
+    indian_origins, \
+    religious_indicators, excluded_contains, exclude_only_origins
 from name_utils import name_stats
 
 names_json_filename = os.path.join("name_lists", "names_merged.json")
@@ -27,10 +29,25 @@ def exclude_names_ending_in(names: Dict[str, NameDefinition]):
     included_names = {}
     for n in names:
         name_def = names[n]
-        if not name_def.name.lower().startswith(bad_name_endings):
+        if not name_def.name.lower().endswith(excluded_name_endings):
             included_names[n] = name_def
 
-    print(f"Removed {len(names.keys()) - len(included_names.keys())} names ending in {bad_name_endings}")
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names ending in {excluded_name_endings}")
+    return included_names
+
+
+def exclude_names_containing_excluded(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        contains_excluded = False
+        for snippet in excluded_contains:
+            if snippet in name_def.name:
+                contains_excluded = True
+        if not contains_excluded:
+            included_names[n] = name_def
+
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names containing: {excluded_contains}")
     return included_names
 
 
@@ -137,13 +154,13 @@ def exclude_date_names(names: Dict[str, NameDefinition]) -> Dict[str, NameDefini
                        'november', 'december', 'spring', 'summer', 'fall', 'winter']
     included_names = {}
     for n in names:
-        likely_an_alias = False
+        likely_a_date_name = False
         name_def = names[n]
         collected_meaning = ','.join(name_def.get_all_meanings()).lower()
         for indicator in date_indicators:
-            if indicator in collected_meaning:
-                likely_an_alias = True
-        if not likely_an_alias:
+            if indicator in collected_meaning or indicator in name_def.name.lower():
+                likely_a_date_name = True
+        if not likely_a_date_name:
             included_names[n] = name_def
     print(f"Removed {len(names.keys()) - len(included_names.keys())} date-based names")
     return included_names
@@ -185,6 +202,25 @@ def exclude_non_ssa_names(names: Dict[str, NameDefinition]):
     return included_names
 
 
+def exclude_us_state_names(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if NameSource.us_states not in name_def.sources:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names that are the same as U.S. State names")
+    return included_names
+
+
+def exclude_country_names(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if NameSource.countries not in name_def.sources:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names that are the same as country names")
+    return included_names
+
 def exclude_stripper_names(names: Dict[str, NameDefinition]):
     included_names = {}
     for n in names:
@@ -222,6 +258,19 @@ def exclude_muslim_names(names: Dict[str, NameDefinition]):
         if Region.Muslim not in name_def.get_all_origins():
             included_names[n] = name_def
     print(f"Removed {len(names.keys()) - len(included_names.keys())} Muslim names")
+    return included_names
+
+
+def exclude_origins_only_in(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        name_origins = name_def.get_all_origins()
+        name_origins = list(filter(lambda i: i not in exclude_only_origins, name_origins))
+        if len(name_origins) > 0:
+            included_names[n] = name_def
+
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} single origin names from the excluded regions")
     return included_names
 
 
@@ -271,6 +320,16 @@ def exclude_short_names(names: Dict[str, NameDefinition]):
     return included_names
 
 
+def exclude_combination_names(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if len(re.findall(r'[A-Z]', name_def.name)) < 2:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names containing more than one capital letter")
+    return included_names
+
+
 def exclude_religious_meanings(names: Dict[str, NameDefinition]):
     accepted_names = {}
     for n in names:
@@ -295,7 +354,9 @@ def apply_filters(names_dict: Dict[str, NameDefinition]):
     filtered_names = exclude_hyphenated_names(filtered_names)
     filtered_names = exclude_nonlatin_names(filtered_names)
     filtered_names = exclude_short_names(filtered_names)
+    filtered_names = exclude_combination_names(filtered_names)
     filtered_names = exclude_names_ending_in(filtered_names)
+    filtered_names = exclude_names_containing_excluded(filtered_names)
     filtered_names = exclude_names_starting_in(filtered_names)
     filtered_names = exclude_hard_to_pronounce_names(filtered_names)
     print(f"{len(filtered_names)} names remain after character-based exclusions")
@@ -310,6 +371,8 @@ def apply_filters(names_dict: Dict[str, NameDefinition]):
     filtered_names = exclude_meaningless_names(filtered_names)
     filtered_names = exclude_meta_names(filtered_names)
     filtered_names = exclude_date_names(filtered_names)
+    filtered_names = exclude_us_state_names(filtered_names)
+    filtered_names = exclude_country_names(filtered_names)
     filtered_names = exclude_birth_order_names(filtered_names)
     filtered_names = exclude_religious_meanings(filtered_names)
     print(f"{len(filtered_names)} names remain after meaning-based exclusions")
@@ -318,6 +381,7 @@ def apply_filters(names_dict: Dict[str, NameDefinition]):
     # filtered_names = exclude_non_ssa_names(filtered_names)
     filtered_names = exclude_stripper_names(filtered_names)
     filtered_names = exclude_names_of_people_know(filtered_names)
+    filtered_names = exclude_origins_only_in(filtered_names)
     filtered_names = exclude_israeli_names(filtered_names)
     filtered_names = exclude_muslim_names(filtered_names)
     # filtered_names = union_regions(filtered_names)

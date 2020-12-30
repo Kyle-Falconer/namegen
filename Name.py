@@ -11,6 +11,8 @@ class NameSource(str, Enum):
     star_trek = "Star Trek"
     stripper = "strippername"
     people_we_know = "people_we_know"
+    us_states = "U.S. States"
+    countries = "Countries"
 
     def __str__(self):
         return self.name
@@ -200,6 +202,7 @@ class Region(str, Enum):
     Sanskrit = 'Sanskrit'
     Sao_Tome_And_Principe = 'São Tomé and Principe'
     Saudi_Arabia = 'Saudi Arabia'
+    Scotland = 'Scotland'
     Senegal = 'Senegal'
     Serbia = 'Serbia'
     Seychelles = 'Seychelles'
@@ -592,6 +595,8 @@ class Region(str, Enum):
             return Region.Sao_Tome_And_Principe
         if label == 'saudi arabia' or label == 'arabia':
             return Region.Saudi_Arabia
+        if label == 'scottish' or label == 'scotland':
+            return Region.Scotland
         if label == 'senegal':
             return Region.Senegal
         if label == 'serbia':
@@ -664,7 +669,7 @@ class Region(str, Enum):
             return Region.Ukraine
         if label == 'united arab emirates':
             return Region.United_Arab_Emirates
-        if label == 'united kingdom' or label == 'welsh' or label == 'scottish' or label == 'scotland':
+        if label == 'united kingdom' or label == 'welsh':
             return Region.United_Kingdom
         if label == 'united states' or label == 'america':
             return Region.United_States
