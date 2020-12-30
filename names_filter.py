@@ -67,6 +67,18 @@ def exclude_hard_to_pronounce_names(names: Dict[str, NameDefinition]):
     return included_names
 
 
+def exclude_non_palindromes(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        reversed_name = name_def.name[::-1].lower()
+        if reversed_name == name_def.name.lower():
+            included_names[n] = name_def
+
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} non-palindrome names")
+    return included_names
+
+
 def exclude_hyphenated_names(names: Dict[str, NameDefinition]):
     included_names = {}
     for n in names:
@@ -221,6 +233,7 @@ def exclude_country_names(names: Dict[str, NameDefinition]):
     print(f"Removed {len(names.keys()) - len(included_names.keys())} names that are the same as country names")
     return included_names
 
+
 def exclude_stripper_names(names: Dict[str, NameDefinition]):
     included_names = {}
     for n in names:
@@ -359,6 +372,7 @@ def apply_filters(names_dict: Dict[str, NameDefinition]):
     filtered_names = exclude_names_containing_excluded(filtered_names)
     filtered_names = exclude_names_starting_in(filtered_names)
     filtered_names = exclude_hard_to_pronounce_names(filtered_names)
+    # filtered_names = exclude_non_palindromes(filtered_names)
     print(f"{len(filtered_names)} names remain after character-based exclusions")
 
     # uncomment one or two of these, depending on desired gender

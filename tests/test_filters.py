@@ -1,5 +1,5 @@
 from Name import NameDefinition, Gender, Region, NameMeaning
-from names_filter import exclude_muslim_names, exclude_israeli_names, exclude_origins_only_in
+from names_filter import exclude_muslim_names, exclude_israeli_names, exclude_origins_only_in, exclude_non_palindromes
 
 
 class TestFilters:
@@ -83,3 +83,14 @@ class TestFilters:
         })
         assert len(filtered) is 2
         assert filtered == {"name1": name1, "name2": name2}
+
+    def test_palindromes(self):
+        # test where the meaning only has the excluded meaning
+        name1 = NameDefinition(name="name1eman", gender=Gender.girl, meanings=[NameMeaning("meaning1", [Region.Muslim])])
+        name2 = NameDefinition(name="name2", gender=Gender.girl, meanings=[NameMeaning("meaning1", [Region.India])])
+        filtered = exclude_non_palindromes({
+            "name1eman": name1,
+            "name2": name2
+        })
+        assert len(filtered) is 1
+        assert filtered == {"name1eman": name1}
