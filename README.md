@@ -3,6 +3,8 @@ A script to compile and filter down baby names based on a series of rules. This 
 name for the future daughter of the original author. The filters and name sources are tuned to suit the author's 
 preferences. Some of these preferences include finding names that have no obviously religious or derogatory meaning.
 
+The master list of names contains more than 45,000 names, with a meaning for each name!
+
 ## Name List Creation
 For the name lists:
 1. Scrape
@@ -32,3 +34,6 @@ This project is developed for Python 3.x and works well in the PyCharm IDE. It's
 Tests in the [./tests](./tests`) folder are written for the pytest framework.
 
 **Important: before committing changes to the `names_merged.json`, delete the contents of the `people_we_know.txt` list and re-run the merge script.**
+
+## Pull Requests
+Please feel free to submit a pull request, particularly if the requested changes deal with expanding or editing the non-scraped name lists (such as the Star Trek and stripper names).
