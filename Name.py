@@ -4,11 +4,12 @@ from typing import List, Dict
 
 
 class NameSource(str, Enum):
-    ssa = "ssa"  # Social Security Administration
+    ssa = "ssa.gov"
     pantheon = "pantheon"
-    tamilcube = "tamilcube"
-    meaning_of_names = "meaning_of_names"
-    star_trek = "star_trek"
+    tamilcube = "tamilcube.com"
+    meaning_of_names = "meaning-of-names.com"
+    star_trek = "Star Trek"
+    stripper = "strippername"
 
     def __str__(self):
         return self.name
@@ -24,6 +25,8 @@ class Gender(str, Enum):
 
     @staticmethod
     def from_str(label: str):
+        if label is None:
+            return Gender.unisex
         label = label.lower()
         if label in ('boy', 'male', 'm', 'b'):
             return Gender.boy

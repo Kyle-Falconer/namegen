@@ -95,6 +95,26 @@ def exclude_boy_names(names: Dict[str, NameDefinition]) -> Dict[str, NameDefinit
     return included_names
 
 
+def exclude_girl_names(names: Dict[str, NameDefinition]) -> Dict[str, NameDefinition]:
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if name_def.gender != Gender.girl:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} girl names")
+    return included_names
+
+
+def exclude_unisex_names(names: Dict[str, NameDefinition]) -> Dict[str, NameDefinition]:
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if name_def.gender != Gender.unisex:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} unisex names")
+    return included_names
+
+
 def exclude_meta_names(names: Dict[str, NameDefinition]) -> Dict[str, NameDefinition]:
     alias_indicators = ['variant of ', 'variation of ', 'diminutive of ', 'abbreviation of ', 'derived from ',
                         'surname']
@@ -102,13 +122,47 @@ def exclude_meta_names(names: Dict[str, NameDefinition]) -> Dict[str, NameDefini
     for n in names:
         likely_an_alias = False
         name_def = names[n]
+        collected_meaning = ','.join(name_def.get_all_meanings()).lower()
         for indicator in alias_indicators:
-            for meaning in name_def.get_all_meanings():
-                if indicator in meaning.lower():
-                    likely_an_alias = True
+            if indicator in collected_meaning:
+                likely_an_alias = True
         if not likely_an_alias:
             included_names[n] = name_def
     print(f"Removed {len(names.keys()) - len(included_names.keys())} meta-names")
+    return included_names
+
+
+def exclude_date_names(names: Dict[str, NameDefinition]) -> Dict[str, NameDefinition]:
+    date_indicators = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'january',
+                       'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october',
+                       'november', 'december', 'spring', 'summer', 'fall', 'winter']
+    included_names = {}
+    for n in names:
+        likely_an_alias = False
+        name_def = names[n]
+        collected_meaning = ','.join(name_def.get_all_meanings()).lower()
+        for indicator in date_indicators:
+            if indicator in collected_meaning:
+                likely_an_alias = True
+        if not likely_an_alias:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} date-based names")
+    return included_names
+
+
+def exclude_birth_order_names(names: Dict[str, NameDefinition]) -> Dict[str, NameDefinition]:
+    date_indicators = ['born']
+    included_names = {}
+    for n in names:
+        likely_an_alias = False
+        name_def = names[n]
+        collected_meaning = ','.join(name_def.get_all_meanings()).lower()
+        for indicator in date_indicators:
+            if indicator in collected_meaning:
+                likely_an_alias = True
+        if not likely_an_alias:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} birth-order names")
     return included_names
 
 
@@ -119,6 +173,26 @@ def exclude_meaningless_names(names: Dict[str, NameDefinition]) -> Dict[str, Nam
         if len(name_def.get_all_meanings()) is not 0:
             included_names[n] = name_def
     print(f"Removed {len(names.keys()) - len(included_names.keys())} names with no meaning")
+    return included_names
+
+
+def exclude_non_ssa_names(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if NameSource.ssa in name_def.sources:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} names that were not in the SSA dataset")
+    return included_names
+
+
+def exclude_stripper_names(names: Dict[str, NameDefinition]):
+    included_names = {}
+    for n in names:
+        name_def = names[n]
+        if NameSource.stripper not in name_def.sources:
+            included_names[n] = name_def
+    print(f"Removed {len(names.keys()) - len(included_names.keys())} stripper names")
     return included_names
 
 
@@ -195,8 +269,9 @@ def exclude_religious_meanings(names: Dict[str, NameDefinition]):
         likely_religious = False
         if name_def is None:
             continue
+        collected_meaning = ','.join(name_def.get_all_meanings()).lower()
         for word in religious_indicators:
-            if word in ','.join(name_def.get_all_meanings()).lower():
+            if word in collected_meaning:
                 likely_religious = True
         if not likely_religious:
             accepted_names[n] = names[n]
@@ -206,21 +281,40 @@ def exclude_religious_meanings(names: Dict[str, NameDefinition]):
 
 def apply_filters(names_dict: Dict[str, NameDefinition]):
     filtered_names = names_dict
+
+    # character-based exclusions
     filtered_names = exclude_hyphenated_names(filtered_names)
+    filtered_names = exclude_nonlatin_names(filtered_names)
+    filtered_names = exclude_short_names(filtered_names)
     filtered_names = exclude_names_ending_in(filtered_names)
     filtered_names = exclude_names_starting_in(filtered_names)
     filtered_names = exclude_hard_to_pronounce_names(filtered_names)
-    filtered_names = exclude_nonlatin_names(filtered_names)
-    filtered_names = exclude_meta_names(filtered_names)
-    filtered_names = exclude_short_names(filtered_names)
-    filtered_names = exclude_religious_meanings(filtered_names)
+    print(f"{len(filtered_names)} names remain after character-based exclusions")
+
+    # uncomment one or two of these, depending on desired gender
     filtered_names = exclude_boy_names(filtered_names)
+    # filtered_names = exclude_girl_names(filtered_names)
+    # filtered_names = exclude_unisex_names(filtered_names)
+    print(f"{len(filtered_names)} names remain after gender-based exclusions")
+
+    # meaning-based exclusions
+    filtered_names = exclude_meaningless_names(filtered_names)
+    filtered_names = exclude_meta_names(filtered_names)
+    filtered_names = exclude_date_names(filtered_names)
+    filtered_names = exclude_birth_order_names(filtered_names)
+    filtered_names = exclude_religious_meanings(filtered_names)
+    print(f"{len(filtered_names)} names remain after meaning-based exclusions")
+
+    # region or origin exclusions
+    filtered_names = exclude_non_ssa_names(filtered_names)
+    filtered_names = exclude_stripper_names(filtered_names)
     filtered_names = exclude_israeli_names(filtered_names)
     filtered_names = exclude_muslim_names(filtered_names)
-    filtered_names = exclude_meaningless_names(filtered_names)
     # filtered_names = union_regions(filtered_names)
     # filtered_names = intersect_regions(filtered_names)
     # filtered_names = intersect_sources(filtered_names)
+    print(f"{len(filtered_names)} names remain after region and origin exclusions")
+
     print(f"filtered a total of {len(names_dict.keys()) - len(filtered_names.keys())} names")
     return filtered_names
 
