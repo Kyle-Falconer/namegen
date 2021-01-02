@@ -1,17 +1,19 @@
 import os
 import re
 from string import ascii_letters
-from typing import Dict
+from typing import Dict, List
+from metaphone import doublemetaphone
 
 from Name import NameDefinition, Gender, Region, NameSource
-from file_utils import read_names_json, name_dict_to_dataframe, save_names_json
+from file_utils import read_names_json, save_names_csv, name_dict_to_dataframe, save_names_json
 from name_constants import excluded_name_endings, hard_to_pronounce, excluded_startings, western_origins, \
     indian_origins, \
     religious_indicators, excluded_contains, exclude_only_origins
 from name_utils import name_stats
 
 names_json_filename = os.path.join("name_lists", "names_merged.json")
-output_filename = "names_output.json"
+output_filename_json = "names_output.json"
+output_filename_csv = "names_output.csv"
 
 
 def exclude_names_starting_in(names: Dict[str, NameDefinition]):
@@ -198,7 +200,7 @@ def exclude_meaningless_names(names: Dict[str, NameDefinition]) -> Dict[str, Nam
     included_names = {}
     for n in names:
         name_def = names[n]
-        if len(name_def.get_all_meanings()) is not 0:
+        if len(name_def.get_all_meanings()) != 0:
             included_names[n] = name_def
     print(f"Removed {len(names.keys()) - len(included_names.keys())} names with no meaning")
     return included_names
@@ -233,22 +235,37 @@ def exclude_country_names(names: Dict[str, NameDefinition]):
     print(f"Removed {len(names.keys()) - len(included_names.keys())} names that are the same as country names")
     return included_names
 
-
-def exclude_stripper_names(names: Dict[str, NameDefinition]):
-    included_names = {}
+def get_metaphones_for_source(names: Dict[str, NameDefinition], source:NameSource) -> List[str]:
+    excluded_metaphones = []
     for n in names:
         name_def = names[n]
-        if NameSource.stripper not in name_def.sources:
+        if source in name_def.sources:
+            excluded_metaphones.append(doublemetaphone(name_def.name)[0])
+    return excluded_metaphones
+
+def exclude_stripper_names(names: Dict[str, NameDefinition], filter_metaphones=False):
+    included_names = {}
+    excluded_metaphones = []
+    if filter_metaphones:
+        excluded_metaphones = get_metaphones_for_source(names, source=NameSource.stripper)
+    for n in names:
+        name_def = names[n]
+        sounds_similar = doublemetaphone(name_def.name)[0] in excluded_metaphones
+        if not sounds_similar and NameSource.stripper not in name_def.sources:
             included_names[n] = name_def
     print(f"Removed {len(names.keys()) - len(included_names.keys())} stripper names")
     return included_names
 
 
-def exclude_names_of_people_know(names: Dict[str, NameDefinition]):
+def exclude_names_of_people_know(names: Dict[str, NameDefinition], filter_metaphones=False):
     included_names = {}
+    excluded_metaphones = []
+    if filter_metaphones:
+        excluded_metaphones = get_metaphones_for_source(names, source=NameSource.people_we_know)
     for n in names:
         name_def = names[n]
-        if NameSource.people_we_know not in name_def.sources:
+        sounds_similar = doublemetaphone(name_def.name)[0] in excluded_metaphones
+        if not sounds_similar and NameSource.people_we_know not in name_def.sources:
             included_names[n] = name_def
     print(f"Removed {len(names.keys()) - len(included_names.keys())} names of people we know")
     return included_names
@@ -381,6 +398,18 @@ def apply_filters(names_dict: Dict[str, NameDefinition]):
     # filtered_names = exclude_unisex_names(filtered_names)
     print(f"{len(filtered_names)} names remain after gender-based exclusions")
 
+    # region or origin exclusions
+    # filtered_names = exclude_non_ssa_names(filtered_names)
+    filtered_names = exclude_stripper_names(filtered_names, filter_metaphones=True)
+    filtered_names = exclude_names_of_people_know(filtered_names, filter_metaphones=True)
+    filtered_names = exclude_origins_only_in(filtered_names)
+    filtered_names = exclude_israeli_names(filtered_names)
+    filtered_names = exclude_muslim_names(filtered_names)
+    # filtered_names = union_regions(filtered_names)
+    # filtered_names = intersect_regions(filtered_names)
+    # filtered_names = intersect_sources(filtered_names)
+    print(f"{len(filtered_names)} names remain after region and origin exclusions")
+
     # meaning-based exclusions
     filtered_names = exclude_meaningless_names(filtered_names)
     filtered_names = exclude_meta_names(filtered_names)
@@ -390,18 +419,6 @@ def apply_filters(names_dict: Dict[str, NameDefinition]):
     filtered_names = exclude_birth_order_names(filtered_names)
     filtered_names = exclude_religious_meanings(filtered_names)
     print(f"{len(filtered_names)} names remain after meaning-based exclusions")
-
-    # region or origin exclusions
-    # filtered_names = exclude_non_ssa_names(filtered_names)
-    filtered_names = exclude_stripper_names(filtered_names)
-    filtered_names = exclude_names_of_people_know(filtered_names)
-    filtered_names = exclude_origins_only_in(filtered_names)
-    filtered_names = exclude_israeli_names(filtered_names)
-    filtered_names = exclude_muslim_names(filtered_names)
-    # filtered_names = union_regions(filtered_names)
-    # filtered_names = intersect_regions(filtered_names)
-    # filtered_names = intersect_sources(filtered_names)
-    print(f"{len(filtered_names)} names remain after region and origin exclusions")
 
     print(f"filtered a total of {len(names_dict.keys()) - len(filtered_names.keys())} names")
     return filtered_names
@@ -413,7 +430,9 @@ def main():
     names_dict = apply_filters(names_dict)
 
     names_dataframe = name_dict_to_dataframe(names_dict)
-    save_names_json(output_filename, names_dataframe)
+    names_dataframe_condensed = name_dict_to_dataframe(names_dict, condensed=True)
+    save_names_json(output_filename_json, names_dataframe)
+    save_names_csv(output_filename_csv, names_dataframe_condensed)
 
 
 if __name__ == "__main__":

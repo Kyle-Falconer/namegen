@@ -115,12 +115,12 @@ def intake_star_trek(names: Dict[str, NameDefinition] = None) -> Dict[str, NameD
     with open(star_trek_filename) as csvfile:
         csvreader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
         for row in csvreader:
-            if len(row['First Name'].strip()) is 0:
+            if len(row['First Name'].strip()) == 0:
                 continue
             rank = ''
             if row['Rank'] and row['Rank'].lower() != "civilian":
                 rank = row['Rank'].split(',')[0].strip()
-                if len(rank) is not 0:
+                if len(rank) != 0:
                     rank = f"{rank} "
             first_name = f"{row['First Name']}"
             character_name = f"{rank}{row['Character']} from Star Trek"

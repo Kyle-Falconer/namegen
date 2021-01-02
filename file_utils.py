@@ -68,12 +68,15 @@ def name_list_to_dataframe(names_list: List[NameDefinition]) -> DataFrame:
     return pd.DataFrame(name_data)
 
 
-def name_dict_to_dataframe(names_dict: Dict[str, NameDefinition]) -> DataFrame:
+def name_dict_to_dataframe(names_dict: Dict[str, NameDefinition], condensed: bool = False) -> DataFrame:
     name_data = []
     for n in names_dict:
         name_def = names_dict[n]
         if name_def is not None:
-            name_data.append(name_def.to_dict())
+            if condensed:
+                name_data.append(name_def.to_condensed_dict())
+            else:
+                name_data.append(name_def.to_dict())
     return pd.DataFrame(name_data)
 
 

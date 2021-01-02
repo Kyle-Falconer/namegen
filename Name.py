@@ -798,6 +798,18 @@ class NameDefinition(object):
             "source": list(self.sources)
         }
 
+    def to_condensed_dict(self):
+        g = 'u'
+        if self.gender == Gender.boy:
+            g = 'b'
+        elif self.gender == Gender.girl:
+            g = 'g'
+        return {
+            "name": self.name,
+            "gender": g,
+            "meanings": str(','.join(self.get_all_meanings()))
+        }
+
     @classmethod
     def columns(cls):
         return ['Name', 'Gender', 'Meaning', 'Known Persons', 'Source']

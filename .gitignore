@@ -2,6 +2,7 @@ geckodriver.log
 *.pyc
 .ipynb_checkpoints/
 .idea/
+venv/
 name_lists/scraper_temp/
 
 # for privacy reasons, don't commit changes to this file:

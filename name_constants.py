@@ -5,7 +5,7 @@ religious_indicators = ["lord", "god", "g-d", "goddess", "jesus", "zeus", "virgi
                         "king david", "old testament", "new testament", "baptist", "saint"]
 excluded_name_endings = (
     'ita', 'line', 'ina', 'loena', 'iden', 'aden', 'adun', 'idun', 'idena', 'adena', 'aduna', 'iduna')
-excluded_startings = ('a', 'k', 'jy', 'eu', 'mary', 'mara', 'bah', 'baka', 'brit', 'shawn', 'hild')
+excluded_startings = ( 'k', 'jy', 'eu', 'mary', 'mara', 'bah', 'baka', 'brit', 'shawn', 'hild')
 excluded_contains = ('kini', 'ika', 'eswit', 'sheba', 'shit', 'sheet')
 hard_to_pronounce = ('kh', 'gh', 'haa', 'ayn', 'aij')
 

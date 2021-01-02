@@ -31,6 +31,12 @@ Filter customization can be done in one of two ways:
 ## Development
 This project is developed for Python 3.x and works well in the PyCharm IDE. It's recommended to use Anaconda or some other virtual environment for developing.
 
+To install the project dependencies, use `pip`:
+
+```shell
+pip install -r requirements.txt
+```
+
 Tests in the [./tests](./tests`) folder are written for the pytest framework.
 
 **Important: before committing changes to the `names_merged.json`, delete the contents of the `people_we_know.txt` list and re-run the merge script.**
