@@ -26,7 +26,7 @@ def save_names_raw(filename, names_dict, overwrite=False):
 
 def save_names_csv(output_filename: str, names_dataframes: DataFrame):
     print(f"saving {len(names_dataframes)} names to {output_filename}")
-    names_dataframes.to_csv(output_filename, header=True)
+    names_dataframes.to_csv(output_filename, header=True, encoding='utf-8-sig')
 
 
 def save_names_json(output_filename: str, names_dataframes: DataFrame):
@@ -77,7 +77,8 @@ def name_dict_to_dataframe(names_dict: Dict[str, NameDefinition], condensed: boo
                 name_data.append(name_def.to_condensed_dict())
             else:
                 name_data.append(name_def.to_dict())
-    return pd.DataFrame(name_data)
+    sorted_names = sorted(name_data, key=lambda x: x["name"])
+    return pd.DataFrame(sorted_names)
 
 
 def count_lines(filename):

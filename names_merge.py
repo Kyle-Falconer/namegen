@@ -4,7 +4,7 @@ from typing import List, Dict
 
 from Name import NameDefinition, Gender, Region, NameSource
 
-from file_utils import save_names_csv, save_names_json, name_list_to_dataframe
+from file_utils import save_names_csv, save_names_json, name_list_to_dataframe, name_dict_to_dataframe
 
 # input lists
 from name_utils import name_stats
@@ -275,9 +275,11 @@ def main():
     name_stats(all_names)
 
     sorted_names = sorted(list(all_names.values()), key=lambda x: x.name)
-    names_df = name_list_to_dataframe(sorted_names)
-    # save_names_csv(merged_output_csv_filename, names_df)
-    save_names_json(merged_output_json_filename, names_df)
+
+    names_dataframe = name_dict_to_dataframe(all_names)
+    names_dataframe_condensed = name_dict_to_dataframe(all_names, condensed=True)
+    save_names_json(merged_output_json_filename, names_dataframe)
+    save_names_csv(merged_output_csv_filename, names_dataframe_condensed)
 
 
 if __name__ == "__main__":
